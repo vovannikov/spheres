@@ -1,0 +1,80 @@
+subsection Geometry
+    set mesh = /home/vladimir/development/bone/tri.msh
+end
+subsection Physical constants
+    # DM1
+    set D_mM1 = 1
+    set K_mM1_D = 1
+
+    # DM2
+    set D_mM2 = 1
+    set K_mM2_D = 1
+
+    # CM1
+    set C_TNFM1 = 1
+    set K_TNFM1_C = 1
+    set C_mM1 = 1
+    set K_mM1_C = 1
+
+    # AM1
+    set A_TNFM1 = 1
+    set A_sM1 = 1
+    set K_TNFM1_A = 1
+    set K_sM1_A = 1
+
+    # AM2
+    set A_IL4M2 = 1
+    set A_sM2 = 1
+    set K_IL4M2_A = 1
+    set K_sM2_A = 1
+
+    # F5
+    set I_IL4M1 = 1
+    set I_TGFM1 = 1
+    set K_IL4M1_I = 1
+    set K_TGFM1_I = 1
+
+    # YM1
+    set Y_M1_h = 1
+    set Y_M1_L = 1
+    set K_TNFM1_Y = 1
+
+    # YM2
+    set Y_M2_h = 1
+
+    # ETNF
+    set E_TNF_h = 1
+    set K_TNF = 1
+
+    # EIL4
+    set E_IL4_h = 1
+    set K_IL4 = 1
+
+    # DTNF
+    set D_TNF_h = 1
+
+    # DIL4
+    set D_IL4_h = 1
+
+    # HTNF
+    set d_TNF = 1
+
+    # HIL4
+    set d_IL4 = 1
+
+    # Dd
+    set D_d = 1
+
+    # dd
+    set d_d = 1
+end
+subsection Time integration
+    set time_start = 0
+    set time_end = 1
+    set time_step_init = 1e-2
+    set time_step_min = 1e-3
+    set time_step_max = 1e-1
+end
+subsection Output
+    set save_path = /mnt/x/bone
+end

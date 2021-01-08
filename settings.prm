@@ -1,0 +1,49 @@
+subsection Geometry
+    set mesh = /home/vladimir/development/bone/mesh_coarse.msh
+end
+subsection Physical constants
+    set D_mM1 = 0.0001484081632653061
+    set K_mM1_D = 0.5
+    set D_mM2 = 0.0001484081632653061
+    set K_mM2_D = 0.5
+    set C_TNFM1 = 1.485565714285714e-06
+    set K_TNFM1_C = 0.005004999999999999
+    set C_mM1 = 1.0
+    set K_mM1_C = 0.5
+    set A_TNFM1 = 0.0004170833333333333
+    set A_sM1 = 1.0
+    set K_TNFM1_A = 0.005004999999999999
+    set K_sM1_A = 0.5
+    set A_IL4M2 = 0.0004170833333333333
+    set A_sM2 = 1.0
+    set K_IL4M2_A = 0.005004999999999999
+    set K_sM2_A = 0.5
+    set I_IL4M1 = 0.031249999999999997
+    set I_TGFM1 = 0.15
+    set K_IL4M1_I = 0.15
+    set K_TGFM1_I = 0.075
+    set Y_M1_h = 0.03125
+    set Y_M1_L = 0.017361111111111112
+    set K_TNFM1_Y = 0.15
+    set Y_M2_h = 0.03125
+    set E_TNF_h = 0.0055
+    set K_TNF = 0.5
+    set E_IL4_h = 0.0055
+    set K_IL4 = 0.5
+    set D_TNF_h = 0.008816326530612244
+    set D_IL4_h = 0.008816326530612244
+    set d_TNF = 0.03125
+    set d_IL4 = 0.03125
+    set D_d = 0.0001484081632653061
+    set d_d = 0.03125
+end
+subsection Time integration
+    set time_start = 0
+    set time_end = 1
+    set time_step_init = 1e-2
+    set time_step_min = 1e-3
+    set time_step_max = 1e-1
+end
+subsection Output
+    set save_path = /mnt/x/bone
+end

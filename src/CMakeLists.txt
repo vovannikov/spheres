@@ -1,0 +1,22 @@
+# compile the actual FE program as a library
+set(HEADER_LIST)
+
+SET(TARGET "bone")
+ADD_LIBRARY(${TARGET} parameter_reader.cpp components.cpp bone.cpp bone_front.cpp)
+TARGET_INCLUDE_DIRECTORIES(${TARGET} PRIVATE ${PROJECT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${pfsim_SOURCE_DIR}/sources)
+DEAL_II_SETUP_TARGET(${TARGET})
+TARGET_LINK_LIBRARIES(${TARGET} pfsim)
+
+
+SET(TARGET_SRC example.cpp)
+SET(TARGET "bone_example")
+
+ADD_EXECUTABLE(${TARGET} ${TARGET_SRC})
+DEAL_II_SETUP_TARGET(${TARGET})
+
+# link against the runner library
+TARGET_LINK_LIBRARIES(${TARGET} bone)
+
+message(STATUS "PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
+
+TARGET_INCLUDE_DIRECTORIES(${TARGET} PRIVATE ${PROJECT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR})
