@@ -27,5 +27,5 @@ make
 
 5. Run the example with given settings
 ```
-./src/bone_example ../bone/settings.prm
+./src/bone_example ../bone/settings/settings.prm
 ```
