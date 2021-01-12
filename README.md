@@ -18,11 +18,14 @@ cd bone-build
 3. Configure the application providing `DEAL_II_DIR` and `CMAKE_BUILD_TYPE` (Release or Debug)
 ```
 cmake ../bone -DDEAL_II_DIR=/path/to/dealii -DCMAKE_BUILD_TYPE=Release
+```
 
 4. Build the target
 ```
 make
+```
 
 5. Run the example with given settings
 ```
 ./src/bone_example ../bone/settings.prm
+```
