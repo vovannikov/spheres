@@ -1,0 +1,58 @@
+\documentclass[a4]{article}
+
+\usepackage{amsfonts,amssymb,amsmath,amsbsy,amsthm}
+
+\addtolength{\textwidth}{5cm}
+\addtolength{\hoffset}{-2.5cm}
+\addtolength{\textheight}{6cm}
+\addtolength{\voffset}{-2.5cm}
+
+\begin{document}
+
+The signs in the original equation have been changed in order to make a neater weak form:
+%
+\begin{subequations}
+\begin{align}
+		\dfrac{\partial c_{M1}}{\partial t} &= \nabla \left( D_{M1} \nabla c_{M1} \right) + \nabla \left( C_{M1} \nabla g_{TNF} \right) - A_{M1} c_{M1} - F5 c_{M1} - Y_{M1} c_{M1} \\
+		\dfrac{\partial c_{M2}}{\partial t} &= \nabla \left( D_{M2} \nabla c_{M2} \right) - A_{M2} c_{M2} - F5' c_{M1} - Y_{M2} c_{M2} \\
+		\dfrac{\partial g_{TNF}}{\partial t} &= \nabla \left( D_{TNF} \nabla g_{TNF} \right) - E_{TNF} c_{M1} - H_{TNF} g_{TNF} \\
+		\dfrac{\partial g_{IL4}}{\partial t} &= \nabla \left( D_{IL4} \nabla g_{IL4} \right) - E_{IL4} c_{M2} - H_{IL4} g_{IL4} \\
+		\dfrac{\partial m_{d}}{\partial t} &= \nabla \left( D_{d} \nabla m_{d} \right) - d_d c_{M1} - d_d c_{M2}
+\end{align}
+\end{subequations}
+%
+where
+%
+\begin{subequations}
+\begin{align}
+		D_i &= f \left( m \right) = \dfrac{D_{mi} m}{K_{mi,D}^2 + m^2} \quad \text{for} \quad i=M1,M2 \\
+		C_{M1} &= f \left( g_{TNF}, m \right) = - \dfrac{C_{TNFM1} g_{TNF}}{K_{TNFM1,C}^2 + g_{TNF}^2} \dfrac{C_{mM1} m}{K_{mM1,C}^2 + m^2} c_{M1} \\
+		A_i &= f \left( s, g_j \right) = - \dfrac{A_{ji} g_j}{K_{ji,A}^2 + g_j^2} \dfrac{A_{si} s}{K_{si,A}^2 + s^2} \quad \text{for} \quad (i,j)=(M1,TNF),(M2,IL4) \\
+		F5 &= f \left( g_{IL4}, g_{TNF} \right) = \dfrac{I_{IL4M1} g_{IL4}^2}{K_{IL4M1,I}^2 + g_{IL4}^2} \dfrac{I_{TNFM1} g_{TNF}^2}{K_{TNFM1,I}^2 + g_{TNF}^2} \\
+		F5' &= -F5 \\
+		Y_{M1} &= f \left( g_{TNF} \right) = Y_{M1,h} - \dfrac{Y_{M1,l} g_{TNF}}{K_{TNFM1,Y}^2 + g_{TNF}^2} \\
+		Y_{M2} &= Y_{M2,h} \\
+		E_{TNF} &= f \left( m_d, g_{TNF} \right) = - \dfrac{E_{TNF,h} m_d}{K_{TNF}^2 + g_{TNF}^2} \\
+		E_{IL4} &= f \left( g_{IL4} \right) = - \dfrac{E_{IL4,h}}{K_{IL4}^2 + g_{IL4}^2} \\
+		H_{i} &= f \left( c_{M1}, c_{M2} \right) = d_i \left( 1 + c_{M1} + c_{M2} \right) \quad \text{for} \quad i=TNF,IL4
+\end{align}
+\end{subequations}
+%
+and the weak form without boundary terms after moving everything to the left and applying integration by parts:
+%
+\begin{subequations}
+\begin{align}
+		\begin{split}
+				&\left( \dfrac{\partial c_{M1}}{\partial t}, \varphi_{c_{M1}} \right) + \left( D_{M1} \nabla c_{M1}, \nabla \varphi_{c_{M1}} \right) + \left( C_{M1} \nabla g_{TNF}, \nabla \varphi_{c_{M1}} \right) \\
+				&\qquad\qquad\quad\quad\;\;\;+ \left( A_{M1} c_{M1}, \varphi_{c_{M1}} \right) + \left( F5 c_{M1}, \varphi_{c_{M1}} \right) + \left( Y_{M1} c_{M1}, \varphi_{c_{M1}} \right) = 0
+		\end{split} \\
+	  &\left( \dfrac{\partial c_{M2}}{\partial t}, \varphi_{c_{M2}} \right) + \left( D_{M2} \nabla c_{M2}, \nabla \varphi_{c_{M2}} \right) 
+		+ \left( A_{M2} c_{M2}, \varphi_{c_{M2}} \right) + \left( F5' c_{M1}, \varphi_{c_{M2}} \right) + \left( Y_{M2} c_{M2}, \varphi_{c_{M2}} \right) = 0 \\
+		&\left( \dfrac{\partial g_{TNF}}{\partial t}, \varphi_{g_{TNF}} \right) + \left( D_{TNF} \nabla g_{TNF}, \nabla \varphi_{g_{TNF}} \right) + \left( E_{TNF} c_{M1}, \varphi_{g_{TNF}} \right) + \left( H_{TNF} g_{TNF}, \varphi_{g_{TNF}} \right) = 0 \\
+		&\left( \dfrac{\partial g_{IL4}}{\partial t}, \varphi_{g_{IL4}} \right) + \left( D_{IL4} \nabla g_{IL4}, \nabla \varphi_{g_{IL4}} \right) + \left( E_{IL4} c_{M2}, \varphi_{g_{IL4}} \right) + \left( H_{IL4} g_{IL4}, \varphi_{g_{IL4}} \right) = 0 \\
+		&\left( \dfrac{\partial m_{d}}{\partial t}, \varphi_{m_{d}} \right) + \left( D_{d} \nabla m_{d}, \nabla \varphi_{m_{d}} \right) + \left( d_d c_{M1}, \varphi_{m_{d}} \right) + \left( d_d c_{M2}, \varphi_{m_{d}} \right) = 0 
+\end{align}
+\end{subequations}
+%
+
+\end{document} 
