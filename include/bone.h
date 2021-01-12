@@ -45,7 +45,7 @@ template <int dim>
 class Bone
 {
     // Is nonlinear solver used
-    bool _isNonlinear = false; 
+    bool _isNonlinear = true; 
 
     // Triangulation
     std::shared_ptr<Triangulation<dim>> _triangulation;

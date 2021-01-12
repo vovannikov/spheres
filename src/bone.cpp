@@ -22,6 +22,7 @@
 #include "pde/material_functor_wrapper.h"
 #include "pde/postprocessor.h"
 #include "pde/quantity_variable_value.h"
+#include "pde/quantity_scalar_material_object.h"
 #include "pde/sensor_scalar.h"
 #include "pde/field_interpolator.h"
 #include "pde/builders.h"
@@ -329,13 +330,13 @@ Bone<dim>::Bone(dealii::ParameterHandler &param)
     _manager->appendOpenTimeAction( std::make_shared<CORE::ActionPipeline<dim, VectorType>>(problemDummy, _fieldInterpolator) );
 
     // Initial conditions for the system
-    double initMd = 1.0;
     double initCm1 = 0.1;
     double initCm2 = 0.0;
     double initGTNF = 0.1;
-    double initGIL4 = 0.0;
+    double initGIL4 = 0.5;
+    double initMd = 1.0;
     auto initialValues = std::make_shared<dealii::Functions::ConstantFunction<dim>>(
-        std::vector<double>{initMd, initCm1, initCm2, initGTNF, initGIL4});
+        std::vector<double>{initCm1, initCm2, initGTNF, initGIL4, initMd});
     _problem->setInitialConditions(initialValues);
 
     // 2. Solve
@@ -352,7 +353,14 @@ Bone<dim>::Bone(dealii::ParameterHandler &param)
         // Output objects
         auto output = std::make_shared<CORE::TriangulationOutput<dim, VectorType>>(_triangulation, savePath, nullptr, mapping);
 
-        // Build postprocessor
+        // Output mf
+        // Build dummy postprocessor
+        auto postprocessorDummy = std::make_shared<PDE::Postprocessor<dim, VectorType>>(problemDummy, modelDummy);
+        postprocessorDummy->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityVariableValue<dim>>(mVar)));
+        output->addPostprocessor(postprocessorDummy);
+
+
+        // Build main postprocessor
         auto postprocessor = std::make_shared<PDE::Postprocessor<dim, VectorType>>(_problem, _model);
 
         // Add variables to output
@@ -362,8 +370,28 @@ Bone<dim>::Bone(dealii::ParameterHandler &param)
         postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityVariableValue<dim>>(gIL4Var)));
         postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityVariableValue<dim>>(mdVar)));
 
+        // Add components to output
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_DM1", cmpDM1)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_DM2", cmpDM2)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_CM1", cmpCM1)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_AM1", cmpAM1)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_AM2", cmpAM2)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_F5", cmpF5)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_YM1", cmpYM1)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_YM2", cmpYM2)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_ETNF", cmpETNF)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_EIL4", cmpEIL4)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_DTNF", cmpDTNF)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_DIL4", cmpDIL4)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_HTNF", cmpHTNF)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_HIL4", cmpHIL4)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_Dd", cmpDd)));
+        postprocessor->addSensor(std::make_shared<PDE::SensorScalar<dim>>(std::make_shared<PDE::QuantityScalarMaterialObject<dim>>("TERM_dd", cmpdd)));
+
         // Add postprocessor
         output->addPostprocessor(postprocessor);
+
+        // Add output
         outputManager->addOutput(output);
     }
 

@@ -18,14 +18,11 @@ cd bone-build
 3. Configure the application providing `DEAL_II_DIR` and `CMAKE_BUILD_TYPE` (Release or Debug)
 ```
 cmake ../bone -DDEAL_II_DIR=/path/to/dealii -DCMAKE_BUILD_TYPE=Release
-```
 
-4. Run the example
+4. Build the target
 ```
-./src/bone_example
-```
+make
 
-If you want to save the VTK output for debug purpose, then provide the folder for results:
+5. Run the example with given settings
 ```
-./src/bone_example /path/to/save/results
-```
+./src/bone_example ../bone/settings.prm

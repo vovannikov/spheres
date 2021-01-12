@@ -1,4 +1,5 @@
 subsection Geometry
+    #set mesh = /home/vladimir/development/bone/mesh_fine.msh
     set mesh = /home/vladimir/development/bone/mesh_coarse.msh
 end
 subsection Physical constants
@@ -39,10 +40,10 @@ subsection Physical constants
 end
 subsection Time integration
     set time_start = 0
-    set time_end = 1
-    set time_step_init = 1e-2
-    set time_step_min = 1e-3
-    set time_step_max = 1e-1
+    set time_end = 10
+    set time_step_init = 1e-1
+    set time_step_min = 1e-2
+    set time_step_max = 1e-0
 end
 subsection Output
     set save_path = /mnt/x/bone
