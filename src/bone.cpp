@@ -323,18 +323,25 @@ Bone<dim>::Bone(dealii::ParameterHandler &param)
     _problem = std::make_shared<CORE::Problem<dim, VectorType>>("Bone", _model, quadCell, quadFace,
         _triangulation, _problemSet, std::move(fe), mapping);
 
+    // Initial conditions for the system
+    param.enter_subsection("Initial conditions");
+
+    double initMf = param.get_double("mf");
+
     // 1. Apply initial conditions
-    auto initialMf = std::make_shared<dealii::Functions::ConstantFunction<dim>>(0.1, 1);
+    auto initialMf = std::make_shared<dealii::Functions::ConstantFunction<dim>>(initMf, 1);
     _fieldInterpolator = std::make_shared<PDE::FieldInterpolator<dim, VectorType>>();
     _fieldInterpolator->applyInterpolation(initialMf);
     _manager->appendOpenTimeAction( std::make_shared<CORE::ActionPipeline<dim, VectorType>>(problemDummy, _fieldInterpolator) );
 
-    // Initial conditions for the system
-    double initCm1 = 0.1;
-    double initCm2 = 0.0;
-    double initGTNF = 0.1;
-    double initGIL4 = 0.5;
-    double initMd = 1.0;
+    double initCm1 = param.get_double("cm1");
+    double initCm2 = param.get_double("cm2");
+    double initGTNF = param.get_double("gTNF");
+    double initGIL4 = param.get_double("gIL4");
+    double initMd = param.get_double("md");
+    
+    param.leave_subsection();
+
     auto initialValues = std::make_shared<dealii::Functions::ConstantFunction<dim>>(
         std::vector<double>{initCm1, initCm2, initGTNF, initGIL4, initMd});
     _problem->setInitialConditions(initialValues);

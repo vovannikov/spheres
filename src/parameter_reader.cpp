@@ -66,6 +66,17 @@ void ParameterReader::declare_parameters()
     }
     prm.leave_subsection();
 
+    prm.enter_subsection("Initial conditions");
+    {
+        prm.declare_entry("cm1", "0.1", dealii::Patterns::Double(0), "cm1");
+        prm.declare_entry("cm2", "0.0", dealii::Patterns::Double(0), "cm2");
+        prm.declare_entry("gTNF", "0.1", dealii::Patterns::Double(0), "gTNF");
+        prm.declare_entry("gIL4", "0.0", dealii::Patterns::Double(0), "gIL4");
+        prm.declare_entry("md", "1.0", dealii::Patterns::Double(0), "md");
+        prm.declare_entry("mf", "0.1", dealii::Patterns::Double(0), "mf");
+    }
+    prm.leave_subsection();
+
     prm.enter_subsection("Time integration");
     {
         prm.declare_entry("time_start", "0", dealii::Patterns::Double(0), "Start time, h");

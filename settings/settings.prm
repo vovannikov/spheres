@@ -38,6 +38,14 @@ subsection Physical constants
     set D_d = 0.0001484081632653061
     set d_d = 0.03125
 end
+subsection Initial conditions
+    set cm1 = 0.1
+    set cm2 = 0.0
+    set gTNF = 0.1
+    set gIL4 = 0.5
+    set md = 1.0
+    set mf = 0.1
+end
 subsection Time integration
     set time_start = 0
     set time_end = 10
