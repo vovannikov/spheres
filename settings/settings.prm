@@ -1,6 +1,8 @@
 subsection Geometry
-    #set mesh = /home/vladimir/development/bone/mesh/fine.msh
-    set mesh = /home/vladimir/development/bone/mesh/coarse.msh
+    #set mesh = ../bone/mesh/quarter_fine.msh
+    set mesh = ../bone/mesh/quarter_coarse.msh
+    #set mesh = ../bone/mesh/full_fine.msh
+    #set mesh = ../bone/mesh/full_coarse.msh
 end
 subsection Physical constants
     set D_mM1 = 0.0001484081632653061
