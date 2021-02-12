@@ -36,7 +36,7 @@ endif()
 
 FetchContent_Declare(
   pfsim
-  GIT_REPOSITORY git@github.com:vovannikov/pfsim.git
+  GIT_REPOSITORY https://github.com/vovannikov/pfsim.git
   GIT_TAG        pf_monolithic
   SOURCE_SUBDIR  sources
 )
