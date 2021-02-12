@@ -437,7 +437,7 @@ std::shared_ptr<Triangulation<dim>> Bone<dim>::loadMesh(const std::string& filen
     gridin.read_msh(f);
 
     //dealii::GridIn<2>(*triangulation).read(filename);
-    const auto refere_cell_types = triangulation->get_reference_cell_types();
+    const auto refere_cell_types = triangulation->get_reference_cells();
 
     AssertDimension(refere_cell_types.size(), 1);
 
