@@ -40,6 +40,12 @@ FetchContent_Declare(
   GIT_TAG        pf_monolithic
   SOURCE_SUBDIR  sources
 )
+
+FetchContent_GetProperties(pfsim)
+if (NOT pfsim_POPULATED)
+    FetchContent_Populate(pfsim)
+    add_subdirectory(${pfsim_SOURCE_DIR}/sources ${pfsim_BINARY_DIR})
+endif ()
 FetchContent_MakeAvailable(pfsim)
 
 add_subdirectory(src)
