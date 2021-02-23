@@ -24,6 +24,7 @@
 
 #include "tools/global.h"
 
+#if defined(DEAL_II_WITH_TRILINOS)
 
 #include <deal.II/lac/trilinos_vector.h>
 #include <deal.II/lac/trilinos_sparse_matrix.h>
@@ -33,8 +34,23 @@
 using VectorType = dealii::TrilinosWrappers::MPI::Vector;
 using MatrixType = dealii::TrilinosWrappers::SparseMatrix;
 
+//template<typename VectorType, typename MatrixType>
+//using LinearSolverType = CORE::LinearSolverTrilinos<VectorType, MatrixType>;
+
+#else
+
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/sparse_matrix.h>
+#include "core/linear_solver_gmres.h"
+
+using MatrixType = dealii::SparseMatrix<double>;
+using VectorType = dealii::Vector<double>;
+
 template<typename VectorType, typename MatrixType>
-using LinearSolverType = CORE::LinearSolverTrilinos<VectorType, MatrixType>;
+using LinearSolverType = CORE::LinearSolverGMRES<VectorType, MatrixType>;
+
+#endif
+
 
 #include <deal.II/distributed/shared_tria.h>
 #include <deal.II/numerics/solution_transfer.h>

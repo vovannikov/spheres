@@ -10,9 +10,9 @@
 #include "core/action_pipeline.h"
 #include "core/triangulation_output.h"
 #include "core/convergence_tester_residual.h"
-#include "core/linear_soe.h"
 #include "core/assembly_strategy_sequential.h"
 #include "core/point_data_map.h"
+#include "core/linear_soe_basic.h"
 
 #include "kernels/time_derivative.h"
 #include "kernels/diffusion.h"
@@ -287,7 +287,7 @@ Bone<dim>::Bone(dealii::ParameterHandler &param)
         = std::make_shared<CORE::AssemblyStrategySequential<dim, VectorType, MatrixType, std::remove_reference_t<decltype(*_model)>>>(_model);
 
     // We create linear SOE explicitly
-    auto linearSOE = std::make_shared<CORE::LinearSOE<VectorType, MatrixType>>();
+    auto linearSOE = std::make_shared<CORE::LinearSOEBasic<VectorType, MatrixType>>();
 
     // Nonlinear solver
     std::shared_ptr<CORE::NonlinearSolver<dim, VectorType, MatrixType>> nonlinearSolver;
