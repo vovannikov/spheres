@@ -34,8 +34,8 @@
 using VectorType = dealii::TrilinosWrappers::MPI::Vector;
 using MatrixType = dealii::TrilinosWrappers::SparseMatrix;
 
-//template<typename VectorType, typename MatrixType>
-//using LinearSolverType = CORE::LinearSolverTrilinos<VectorType, MatrixType>;
+template<typename VectorType, typename MatrixType>
+using LinearSolverType = CORE::LinearSolverTrilinos<VectorType, MatrixType>;
 
 #else
 

@@ -24,7 +24,7 @@ namespace PDE {
 
 namespace CORE {
     template <int dim, typename VectorType>
-    class AnalysisTransient;
+    class AnalysisOneStep;
 
     template <int dim, typename VectorType>
     class ProblemSet;
@@ -42,7 +42,7 @@ namespace CORE {
 }
 
 template <int dim>
-class Bone
+class Spheres
 {
     // Is nonlinear solver used
     bool _isNonlinear = true; 
@@ -54,7 +54,7 @@ class Bone
     std::shared_ptr<PDE::ModelWithKernels<dim, VectorType>> _model;
 
     // Analysis
-    std::shared_ptr<CORE::AnalysisTransient<dim, VectorType>> _analysis;
+    std::shared_ptr<CORE::AnalysisOneStep<dim, VectorType>> _analysis;
 
     // Create problem set
     std::shared_ptr<CORE::ProblemSet<dim, VectorType>> _problemSet;
@@ -75,7 +75,7 @@ class Bone
     double _timeStepMax;
 
 public:
-    Bone(dealii::ParameterHandler &param);
+    Spheres(dealii::ParameterHandler &param);
 
     void run();
 
@@ -83,5 +83,6 @@ private:
     std::shared_ptr<Triangulation<dim>> createMesh();
     std::shared_ptr<Triangulation<dim>> loadMesh(const std::string& filename);
 
-    void setBoundaryCondtions(std::shared_ptr<CORE::Model<dim, VectorType>> model, Triangulation<dim>& triangulation);
+    void setBoundaryCondtions(std::shared_ptr<CORE::Model<dim, VectorType>> model, Triangulation<dim>& triangulation, 
+        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2);
 };

@@ -1,5 +1,5 @@
-#include "bone.h"
-#include "bone_front.h"
+#include "spheres.h"
+#include "front.h"
 #include "parameter_reader.h"
 #include "tools/global.h"
 
@@ -7,31 +7,31 @@
 
 // Main model itself
 template <int dim>
-BoneFront<dim>::BoneFront(const std::string& paramsPath)
-    : _bone(nullptr)
+Front<dim>::Front(const std::string& paramsPath)
+    : _spheres(nullptr)
 {
-    std::cout << "Building Bone frontend ..." << std::endl;
+    std::cout << "Building Spheres frontend ..." << std::endl;
     TOOLS::initGlobals();
 
     dealii::ParameterHandler prm;
     ParameterReader reader(prm);
     reader.read_parameters(paramsPath);
 
-    _bone = std::make_unique<Bone<dim>>(prm);
+    _spheres = std::make_unique<Spheres<dim>>(prm);
 }
 
 // Main model itself
 template <int dim>
-BoneFront<dim>::~BoneFront()
+Front<dim>::~Front()
 {
     TOOLS::timer::instance().print_summary();
 }
 
 template <int dim>
-void BoneFront<dim>::run()
+void Front<dim>::run()
 {
-    _bone->run();
+    _spheres->run();
 }
 
-template class BoneFront<2>;
-//template class BoneFront<3>;
+template class Front<2>;
+template class Front<3>;

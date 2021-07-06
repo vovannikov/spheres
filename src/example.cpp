@@ -1,4 +1,4 @@
-#include "bone_front.h"
+#include "front.h"
 
 #include <iostream>
 #include <deal.II/base/mpi.h>
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     std::cout << "    Number of threads     = " << dealii::MultithreadInfo::n_threads() << std::endl;
     std::cout << "    Is single thread mode = " << (dealii::MultithreadInfo::is_running_single_threaded() ? "yes" : "no") << std::endl;
 
-    BoneFront<p_dim> problem(paramsPath);
+    Front<p_dim> problem(paramsPath);
 
     // First call
     // returns a vector<double>

@@ -1,16 +1,16 @@
 subsection Geometry
-    set mesh = /home/kapusta/work/ai-2particles/spheres2-v2.msh
+    set mesh = %mesh%
     set x1 = 0.0
-    set x2 = 150.8407768384394
+    set x2 = %x2%
 end
 subsection Physical constants
-    set E = 100e-3
+    set E = %E%
     set nu = 0.35
     set tensor = true
 end
 subsection Output
-    set save_vtk = true
+    set save_vtk = false
     set save_log = true
     set path_vtk = /mnt/c/Temp/ai-2particles
-    set path_log = /mnt/c/Temp/ai-2particles/output.log
+    set path_log = %log%
 end

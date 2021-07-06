@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.13.1)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-SET(TARGET "bone")
+SET(TARGET "spheres")
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -15,7 +15,7 @@ FIND_PACKAGE(deal.II 9.0 QUIET
 
 IF(NOT ${deal.II_FOUND})
   MESSAGE(FATAL_ERROR "\n"
-    "*** BONE: Could not locate deal.II. ***\n\n"
+    "*** SPHERES: Could not locate deal.II. ***\n\n"
     "You may want to either pass a flag -DDEAL_II_DIR=/path/to/deal.II to cmake\n"
     "or set an environment variable \"DEAL_II_DIR\" that contains this path."
     )
@@ -36,7 +36,7 @@ endif()
 
 FetchContent_Declare(
   pfsim
-  GIT_REPOSITORY https://github.com/vovannikov/pfsim.git
+  GIT_REPOSITORY git@github.com:vovannikov/pfsim.git
   GIT_TAG        pf_monolithic
   SOURCE_SUBDIR  sources
 )
