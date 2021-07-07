@@ -46,6 +46,8 @@
 
 #include <deal.II/fe/mapping_fe.h>
 
+#include "linear_solver_sp.h"
+
 // Main model itself
 template <int dim>
 Spheres<dim>::Spheres(dealii::ParameterHandler &param)
@@ -76,10 +78,10 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     param.leave_subsection();
 
     // Linear solver - common for all problems
-    unsigned int maxIter = 300000;
+    unsigned int maxIter = 10000;
     double absTol = 1e-7;
     double relTol = 1e-7;
-    auto linearSolver = std::make_shared<LinearSolverType<VectorType, MatrixType>>(maxIter, absTol, relTol);
+    auto linearSolver = std::make_shared<LinearSolverSp<VectorType, MatrixType>>(maxIter, absTol, relTol);
 
     // Plane elastic model
     _model = std::make_shared<PDE::ModelWithKernels<dim, VectorType>>();
