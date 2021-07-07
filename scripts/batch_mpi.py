@@ -1,33 +1,32 @@
 import os
 import numpy as np
-import multiprocessing
+from mpi4py import MPI
 from os import listdir
 from os.path import isfile, join
 import csv
-import multiprocessing
-import time
-
-# 2D vs 3D simulations:
-is3D = True
-geoSym = "3" if is3D else "2"
 
 # Do real simulations of just debug
 doRealSimulations = True
 
 # paths
+pathGeo = "/home/kapusta/development/spheres/settings/spheres2-tpl.geo"
 pathParams = "/home/kapusta/development/spheres/settings/settings-tpl.prm"
+pathBatch = "/home/kapusta/work/batch"
 pathExec = "/home/kapusta/development/spheres-release/src/spheres_runner"
-pathGeo = "/home/kapusta/development/spheres/settings/spheres{}-tpl.geo".format(geoSym)
-pathBatch = "/home/kapusta/work/batch/{}d".format(geoSym)
 
 pathMsh = pathBatch + "/mesh"
 pathLog = pathBatch + "/log"
 pathSet = pathBatch + "/prm"
 
-def runCase(comb):
+# MPI data
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
-    procId = multiprocessing.current_process()
-    print("#{}: dA={}, dB={}, nratio={}, E={}".format(procId, comb['dA'], comb['dB'], comb['rNrat'], comb['E']))
+def runCase(icase, comb):
+
+    rank = comm.Get_rank()
+    print("# rank={} case={}: dA={}, dB={}, nratio={}, E={}".format(rank, icase, comb['dA'], comb['dB'], comb['rNrat'], comb['E']))
 
     R1 = comb['dA'] / 2.
     R2 = comb['dB'] / 2.
@@ -41,14 +40,14 @@ def runCase(comb):
     strH1 = "{:.10f}".format(h1)
     strH2 = "{:.10f}".format(h2)
 
-    caseFileName = "spheres{}_R1={:.1f}_R2={:.1f}_Rn={:.4f}_E={:.0f}".format(geoSym, R1, R2, Rn, comb['E'])
+    caseFileName = "spheres2_R1={}_R2={}_Rn={}_E={}".format(R1, R2, Rn, E)
     fileMsh = "{}/{}.msh".format(pathMsh, caseFileName)
     fileLog = "{}/{}.log".format(pathLog, caseFileName)
     fileSet = "{}/{}.prm".format(pathSet, caseFileName)
 
     # Generate mesh with gmsh
     if doRealSimulations:
-        cmdGmsh = "gmsh -{} {} -setnumber R1 {} -setnumber R2 {} -setnumber Rn {} -setnumber h1 {} -setnumber h2 {} -o {}".format(geoSym, pathGeo, R1, R2, Rn, strH1, strH2, fileMsh)
+        cmdGmsh = "gmsh -2 {} -setnumber R1 {} -setnumber R2 {} -setnumber Rn {} -setnumber h1 {} -setnumber h2 {} -o {}".format(pathGeo, R1, R2, Rn, strH1, strH2, fileMsh)
         stream = os.popen(cmdGmsh)
         output = stream.read()
         #os.system(cmdGmsh)
@@ -77,27 +76,25 @@ def runCase(comb):
         #os.system(cmdSpheres)
         #icomm = comm.Spawn(pathExec, args=fileSet, maxprocs=1, root=0)
 
-nproc = 6
+# This is to be available on all processors
 
-if __name__ == '__main__':
+# List of params to vary
+lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200] # mkm, total = 10
+lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5] # mkm, total = 9
+lstE = [5, 10, 20, 40, 70, 100, 130, 160, 200] # mkm, total = 9
 
-    time_start = time.time()
+# Debug reduced list
+#lstD = [38, 45]
+#lstRnRatio = [0.01, 0.02]
+#lstE = [5, 10]
 
-    # List of params to vary
-    lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200] # mkm, total = 10
-    lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5] # mkm, total = 9
-    lstE = [5, 10, 20, 40, 70, 100, 130, 160, 200] # mkm, total = 9
+nDiam = int(len(lstD) * (len(lstD) + 1) / 2)
+nRatio = len(lstRnRatio)
+nE = len(lstE)
 
-    # Debug reduced list
-    #lstD = [38, 45]
-    #lstRnRatio = [0.01, 0.02]
-    #lstE = [5, 10]
+nTotal = nDiam * nRatio * nE
 
-    nDiam = int(len(lstD) * (len(lstD) + 1) / 2)
-    nRatio = len(lstRnRatio)
-    nE = len(lstE)
-
-    nTotal = nDiam * nRatio * nE
+if rank == 0:
 
     print("# of diameters combinations = {}".format(nDiam))
     print("# of neck ratios = {}".format(nRatio))
@@ -108,19 +105,43 @@ if __name__ == '__main__':
 
     for dA in lstD:
         for dB in lstD:
-            if dA >= dB:
+            if dB >= dA:
                 for rNratio in lstRnRatio:
                     for E in lstE:
                         lstCombinations.append({'dA': dA, 'dB': dB, 'rNrat': rNratio, 'E': E})
 
-    with multiprocessing.Pool(processes=nproc) as pool:
-        pool.map(runCase, lstCombinations)
+    icase = 0
+    if size == 1:
+        for comb in lstCombinations:
+            runCase(icase, comb)
+            icase += 1
+    else:
+        for comb in lstCombinations:
 
-    time_end = time.time()
+            nextReady = comm.recv(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG)
 
-    hours, rem = divmod(time_end-time_start, 3600)
-    minutes, seconds = divmod(rem, 60)
-    print("Wall time: {:0>2}h:{:0>2}m:{:05.2f}s".format(int(hours),int(minutes),seconds))
+            data = {'icase':icase, 'comb': comb}
+            req = comm.send(data, dest=nextReady, tag=0)
+            icase += 1
+
+        for proc in range(1, size):
+            data = {'icase':nTotal, 'comb': None}
+            comm.send(data, dest=proc, tag=0)
+
+else:
+    
+    while (True):
+
+        comm.send(rank, dest=0, tag=1)
+
+        data = comm.recv(source=0)
+        icase = data['icase']
+        if icase < nTotal:
+            comb = data['comb']
+            runCase(icase, comb)
+        else:
+            print("Proc {} exiting ...".format(rank))
+            break
 
 # Now merge all logs int a single data file
 logFiles = [f for f in listdir(pathLog) if isfile(join(pathLog, f))]
@@ -150,9 +171,7 @@ for fileCase in logFiles:
         stiffness = 0
         for row in reader:
             try:
-                t = float(row[0])
-                if t > 0.9:
-                    stiffness = float(row[1])
+                stiffness = float(row[1])
             except ValueError:
                 stiffness = 0
 
@@ -161,7 +180,7 @@ for fileCase in logFiles:
     lstRows.append(csvRow)
 
 # Write resultant CSV file
-csvStifFile = os.path.join(pathBatch, "tensile_stiffness_{}d.csv".format(geoSym))
+csvStifFile = os.path.join(pathBatch, "tensile_stiffness_2d_coarse.csv")
 with open(csvStifFile, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerow(csvHeader)
