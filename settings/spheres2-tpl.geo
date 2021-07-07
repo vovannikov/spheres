@@ -9,26 +9,29 @@
 //h2 = Sqrt(R2*R2 - Rn*Rn);
 
 ratio_lc = 0.1; //0.1 - coarse computations, 0.02 - fine computations
-lc = ratio_lc * R1;
-lcr = 0.5*lc;
+lc1 = ratio_lc * R1;
+lc2 = ratio_lc * R2;
+
+// Here we assume that R2 <= R1
+//lcr = 0.5*Min(lc1, lc2);
+lcr = 0.5*lc2;
 
 O1 = 0.0;
-
-Point(1) = {O1, 0, 0, lc};
+Point(1) = {O1, 0, 0, lc1};
 Point(2) = {O1+h1, 0, 0, lcr};
 Point(3) = {O1+h1,-Rn, 0, lcr};
 Point(4) = {O1+h1, Rn, 0, lcr};
-Point(5) = {O1, R1, 0, lc};
-Point(6) = {O1-R1, 0, 0, lc};
-Point(7) = {O1,-R1, 0, lc};
+Point(5) = {O1, R1, 0, lc1};
+Point(6) = {O1-R1, 0, 0, lc1};
+Point(7) = {O1,-R1, 0, lc1};
 
 // Second sphere
 O2 = O1 + h1 + h2;
 //O2 = O1 + offset;
-Point(8) = {O2, 0, 0, lc};
-Point(9) = {O2,-R2, 0, lc};
-Point(10) = {O2+R2, 0, 0, lc};
-Point(11) = {O2, R2, 0, lc};
+Point(8) = {O2, 0, 0, lc2};
+Point(9) = {O2,-R2, 0, lc2};
+Point(10) = {O2+R2, 0, 0, lc2};
+Point(11) = {O2, R2, 0, lc2};
 
 // Left sphere
 Circle(2) = {4,1,5};
