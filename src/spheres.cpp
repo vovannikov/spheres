@@ -76,9 +76,9 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     param.leave_subsection();
 
     // Linear solver - common for all problems
-    unsigned int maxIter = 10000;
-    double absTol = 1e-8;
-    double relTol = 1e-8;
+    unsigned int maxIter = 300000;
+    double absTol = 1e-7;
+    double relTol = 1e-7;
     auto linearSolver = std::make_shared<LinearSolverType<VectorType, MatrixType>>(maxIter, absTol, relTol);
 
     // Plane elastic model
