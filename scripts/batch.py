@@ -69,7 +69,7 @@ def runCase(comb):
 
     # Run spheres executable
     if doRealSimulations:
-        cmdSpheres = "{} {}".format(pathExec, fileSet)
+        cmdSpheres = "{} {} {}d".format(pathExec, fileSet, geoSym)
         
         # This does not work properly in MPI
         stream = os.popen(cmdSpheres)
