@@ -46,6 +46,10 @@ def runCase(comb):
     fileLog = "{}/{}.log".format(pathLog, caseFileName)
     fileSet = "{}/{}.prm".format(pathSet, caseFileName)
 
+    # If log file exists, then we skip this case
+    if os.path.isfile(fileLog):
+        return
+
     # Generate mesh with gmsh
     if doRealSimulations:
         cmdGmsh = "gmsh -{} {} -setnumber R1 {} -setnumber R2 {} -setnumber Rn {} -setnumber h1 {} -setnumber h2 {} -o {}".format(geoSym, pathGeo, R1, R2, Rn, strH1, strH2, fileMsh)

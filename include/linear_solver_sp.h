@@ -74,7 +74,8 @@ public:
         // use the CG solver from deal.II
         dealii::SolverControl solver_control(_maxIter, _absTol, _relTol);
 
-        dealii::TrilinosWrappers::SolverGMRES solver(solver_control);
+        dealii::TrilinosWrappers::SolverCG solver(solver_control);
+        //dealii::TrilinosWrappers::SolverGMRES solver(solver_control);
 
         try {
             solver.solve(

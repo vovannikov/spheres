@@ -78,7 +78,7 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     param.leave_subsection();
 
     // Linear solver - common for all problems
-    unsigned int maxIter = 10000;
+    unsigned int maxIter = 100000;
     double absTol = 1e-7;
     double relTol = 1e-7;
     auto linearSolver = std::make_shared<LinearSolverSp<VectorType, MatrixType>>(maxIter, absTol, relTol);
