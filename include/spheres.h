@@ -83,6 +83,8 @@ private:
     std::shared_ptr<Triangulation<dim>> createMesh();
     std::shared_ptr<Triangulation<dim>> loadMesh(const std::string& filename);
 
+    /*
     void setBoundaryCondtions(std::shared_ptr<CORE::Model<dim, VectorType>> model, Triangulation<dim>& triangulation, 
-        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2);
+        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2, const std::string& mode);
+    */
 };

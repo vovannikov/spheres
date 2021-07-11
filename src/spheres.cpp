@@ -1,5 +1,9 @@
-#include "spheres.h"
 #include "common.h"
+#include "spheres.h"
+
+#include "study_case.h"
+#include "case_tension.h"
+#include "case_torsion.h"
 
 #include "core/analysis_transient.h"
 #include "core/solver_direct.h"
@@ -14,10 +18,9 @@
 #include "core/linear_soe_basic.h"
 #include "core/analysis_one_step.h"
 
+#include "core/scalar_quantity_time.h"
 #include "core/table_output.h"
 #include "core/table_entry_scalar.h"
-#include "core/scalar_quantity_time.h"
-#include "core/scalar_quantity_reaction.h"
 
 #include "kernels/time_derivative.h"
 #include "kernels/diffusion.h"
@@ -65,13 +68,20 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     double x1 = param.get_double("x1");
     double x2 = param.get_double("x2");
 
-    dealii::Point<dim> O1(x1, 0);
-    dealii::Point<dim> O2(x2, 0);
+    dealii::Point<dim> O1;
+    O1(0) = x1;
+    
+    dealii::Point<dim> O2;
+    O2(0) = x2;
 
     TOOLS::cout::instance() << "x1 = " << x1 << std::endl;
     TOOLS::cout::instance() << "x2 = " << x2 << std::endl;
 
     const std::string mesh_file = param.get("mesh");
+
+    const std::string stiffnessMode = param.get("stiffness");
+
+    TOOLS::cout::instance() << "Analysis case = " << stiffnessMode << std::endl;
 
     _triangulation = loadMesh(mesh_file);
 
@@ -91,9 +101,6 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     // Build kernels
     auto material = std::make_shared<SOLID::MaterialTensorIsotropic<dim>>(E, nu);
     SOLID::createTensorLinearKernels<dim, VectorType>(_model, material, components);
-
-    // Apply default kinematic EBCs
-    setBoundaryCondtions(_model, *_triangulation, O1, O2);
 
     // System assembly strategy - separate for each model
     using ModelType = std::remove_reference_t<decltype(*_model)>;
@@ -140,6 +147,19 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     _problem = std::make_shared<CORE::Problem<dim, VectorType>>("Spheres", _model, quadCell, quadFace,
         _triangulation, _problemSet, std::move(fe), mapping);
 
+    std::shared_ptr<StudyCase<dim, VectorType>> studyCase;
+    if (stiffnessMode == "tension") {
+        studyCase = std::make_shared<CaseTension<dim, VectorType, MatrixType, ModelType>>(
+            _problem, _model, linearSOE, O1, O2);
+    } else if (stiffnessMode == "torsion") {
+        studyCase = std::make_shared<CaseTorsion<dim, VectorType, MatrixType, ModelType>>(
+            _problem, _model, linearSOE, O1, O2);
+    }
+    studyCase->imposeBoundaryConditions(_model);
+
+    // Apply default kinematic EBCs
+    //setBoundaryCondtions(_model, *_triangulation, O1, O2, stiffnessMode);
+
     // 1. Solve
     _manager->appendAction( std::make_shared<CORE::ActionMatrixSolver<dim, VectorType, MatrixType>>(_problem, nonlinearSolver, linearSOE) );
 
@@ -174,17 +194,7 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
         auto scalarTime = std::make_shared<CORE::ScalarQuantityTime>(_model);
         table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarTime));
 
-        dealii::types::global_dof_index component_num = 0;
-
-        unsigned int precision = 10;
-
-        auto scalarReaction1 = std::make_shared<CORE::ScalarQuantityReaction<dim, VectorType, MatrixType, ModelType>>(
-            _problem, _model, linearSOE, component_num, O1);
-        table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarReaction1, precision));
-
-        auto scalarReaction2 = std::make_shared<CORE::ScalarQuantityReaction<dim, VectorType, MatrixType, ModelType>>(
-            _problem, _model, linearSOE, component_num, O2);
-        table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarReaction2, precision));
+        studyCase->addReactions(table);
     }
 
     // Timestep selector settings
@@ -204,7 +214,7 @@ void Spheres<dim>::run()
 {
     _analysis->analyze(_manager);
 }
-
+/*
 template <int dim>
 std::shared_ptr<Triangulation<dim>> Spheres<dim>::loadMesh(const std::string& filename)
 {
@@ -215,41 +225,119 @@ std::shared_ptr<Triangulation<dim>> Spheres<dim>::loadMesh(const std::string& fi
     std::ifstream f(filename);
     gridin.read_msh(f);
 
+    // Second mesh
+    std::string filename2 = "/home/kapusta/work/ai-2particles/spheres2-v1-part2.msh";
+    auto triangulation2 = createTriaPtr<dim>();
+    dealii::GridIn<dim> gridin2;
+    gridin2.attach_triangulation(*triangulation2);
+    std::ifstream f2(filename2);
+    gridin2.read_msh(f2);
+
     //dealii::GridIn<dim>(*triangulation).read(filename);
     const auto refere_cell_types = triangulation->get_reference_cells();
 
     AssertDimension(refere_cell_types.size(), 1);
 
+
+    auto triangulationRes = createTriaPtr<dim>();
+
+    dealii::GridGenerator::merge_triangulations(*triangulation, *triangulation2, *triangulationRes);
+
     // Output grid for debug
-    /*
+
+    std::ofstream out1("grid1.svg");
+    dealii::GridOut grid_out1;
+    grid_out1.write_svg(*triangulation, out1);
+
+    std::ofstream out2("grid2.svg");
+    dealii::GridOut grid_out2;
+    grid_out2.write_svg(*triangulation2, out2);
+
+    std::ofstream outRes("gridRes.svg");
+    dealii::GridOut grid_outRes;
+    grid_outRes.write_svg(*triangulationRes, outRes);
+
+    throw std::runtime_error("STOP after Grid");
+
+    return triangulationRes;
+}
+*/
+
+template <int dim>
+std::shared_ptr<Triangulation<dim>> Spheres<dim>::loadMesh(const std::string& filename)
+{
+    auto triangulation = createTriaPtr<dim>();
+
+    dealii::GridIn<dim> gridin;
+    gridin.attach_triangulation(*triangulation);
+    std::ifstream f(filename);
+    gridin.read_msh(f);
+/*
     std::ofstream out("grid.svg");
     dealii::GridOut grid_out;
     grid_out.write_svg(*triangulation, out);
 
     throw std::runtime_error("STOP after Grid");
-    */
-
+*/
     return triangulation;
 }
 
+/*
 template <int dim>
 void Spheres<dim>::setBoundaryCondtions(std::shared_ptr<CORE::Model<dim, VectorType>> model, Triangulation<dim>& triangulation, 
-    const dealii::Point<dim>& O1, const dealii::Point<dim>& O2)
+    const dealii::Point<dim>& O1, const dealii::Point<dim>& O2, const std::string& mode)
 {
     (void)triangulation;
 
-    model->addVertexConstraint(0, O1);
-    model->addVertexConstraint(1, O1);
-    if (dim == 3) {
-        model->addVertexConstraint(2, O1);
+    if (mode == "tension") {
+        model->addVertexConstraint(0, O1);
+        model->addVertexConstraint(1, O1);
+        if (dim == 3) {
+            model->addVertexConstraint(2, O1);
+        }
+
+        model->addVertexConstraint(0, O2, 1);
+        model->addVertexConstraint(1, O2);
+        if (dim == 3) {
+            model->addVertexConstraint(2, O2);
+        }
     }
 
-    model->addVertexConstraint(0, O2, 1);
-    model->addVertexConstraint(1, O2);
-    if (dim == 3) {
-        model->addVertexConstraint(2, O2);
+    if (mode == "torsion") {
+
+        double posTol = 1e-6;
+
+        std::map<dealii::Point<dim>, std::vector<unsigned int>> mapLeft;
+        std::map<dealii::Point<dim>, std::vector<unsigned int>> mapRight;
+
+        for (const auto &tria_cell : triangulation.active_cell_iterators())
+        {
+            if (tria_cell->is_locally_owned())
+            {
+                auto cellSrc = typename dealii::DoFHandler<dim>::cell_iterator(*tria_cell, 
+                    &_problem->getApproximation().getDoFHandler());
+
+                for (unsigned int v = 0; v < cellSrc->n_vertices(); ++v)
+                {
+                    auto& point = tria_cell->vertex(v);
+
+                    if (std::abs(point(0) - O1(0)) < posTol) {
+                        auto idY = cellSrc->vertex_dof_index(v, 1);
+                        auto idZ = cellSrc->vertex_dof_index(v, 2);
+
+                        mapLeft[point] = {idY, idZ}
+                    } else if (std::abs(point(0) - O2(0)) < posTol) {
+                        auto idY = cellSrc->vertex_dof_index(v, 1);
+                        auto idZ = cellSrc->vertex_dof_index(v, 2);
+
+                        mapRight[point] = {idY, idZ}
+                    }
+                }
+            }
+        }
     }
 }
+*/
 
 template class Spheres<2>;
 template class Spheres<3>;
