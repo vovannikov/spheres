@@ -1,6 +1,7 @@
 //SetFactory("OpenCASCADE");
 
-//Mesh.Algorithm = 6;
+// This is required to generate better mesh for torsion case
+Mesh.Algorithm3D = 10;
 
 //R1 = 90;
 //R2 = 63;
@@ -8,7 +9,7 @@
 //h1 = Sqrt(R1*R1 - Rn*Rn);
 //h2 = Sqrt(R2*R2 - Rn*Rn);
 
-ratio_lc = 0.15; //0.1 - coarse computations, 0.02 - fine computations
+ratio_lc = 0.15; // 2.0 - super coarse for debug //0.1 - coarse computations, 0.02 - fine computations
 lc1 = ratio_lc * R1;
 lc2 = ratio_lc * R2;
 

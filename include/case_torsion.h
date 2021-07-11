@@ -14,7 +14,7 @@ template <int dim, typename VectorType, typename MatrixType, typename ModelType>
 class CaseTorsion : public StudyCase<dim, VectorType>
 {
 private:
-    double _magnitude = 0.001;
+    double _magnitude = 0.01;
 
     std::shared_ptr<CORE::ProblemBase<dim, VectorType>> _problem;
     std::shared_ptr<const ModelType> _model;
