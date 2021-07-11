@@ -11,13 +11,17 @@ import time
 is3D = True
 geoSym = "3" if is3D else "2"
 
+# What stiffness do we analyze
+#stiffnessMode = "tension"
+stiffnessMode = "torsion"
+
 # Do real simulations of just debug
 doRealSimulations = True
 
 # paths
 pathParams = "/home/kapusta/development/spheres/settings/settings-tpl.prm"
 pathExec = "/home/kapusta/development/spheres-release/src/spheres_runner"
-pathGeo = "/home/kapusta/development/spheres/settings/spheres{}-tpl.geo".format(geoSym)
+pathGeo = "/home/kapusta/development/spheres/settings/spheres{}-{}-tpl.geo".format(geoSym, stiffnessMode)
 pathBatch = "/home/kapusta/work/batch/{}d".format(geoSym)
 
 pathMsh = pathBatch + "/mesh"
@@ -165,7 +169,7 @@ for fileCase in logFiles:
     lstRows.append(csvRow)
 
 # Write resultant CSV file
-csvStifFile = os.path.join(pathBatch, "tensile_stiffness_{}d.csv".format(geoSym))
+csvStifFile = os.path.join(pathBatch, "{}_stiffness_{}d.csv".format(stiffnessMode, geoSym))
 with open(csvStifFile, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerow(csvHeader)
