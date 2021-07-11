@@ -22,7 +22,7 @@ doRealSimulations = True
 pathParams = "/home/kapusta/development/spheres/settings/settings-tpl.prm"
 pathExec = "/home/kapusta/development/spheres-release/src/spheres_runner"
 pathGeo = "/home/kapusta/development/spheres/settings/spheres{}-{}-tpl.geo".format(geoSym, stiffnessMode)
-pathBatch = "/home/kapusta/work/batch/{}d".format(geoSym)
+pathBatch = "/home/kapusta/work/batch/{}/{}d".format(stiffnessMode, geoSym)
 
 pathMsh = pathBatch + "/mesh"
 pathLog = pathBatch + "/log"
@@ -68,6 +68,7 @@ def runCase(comb):
 
     caseParams = dataParamsTpl
     caseParams = caseParams.replace("%mesh%", fileMsh)
+    caseParams = caseParams.replace("%stiffness%", stiffnessMode)
     caseParams = caseParams.replace("%x2%", str(offset))
     caseParams = caseParams.replace("%E%", str(E))
     caseParams = caseParams.replace("%log%", fileLog)
