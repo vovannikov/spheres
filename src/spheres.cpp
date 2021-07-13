@@ -155,7 +155,7 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     } else if (stiffnessMode == "torsion") {
         studyCase = std::make_shared<CaseTorsion<dim, VectorType, MatrixType, ModelType>>(
             _problem, _model, linearSOE, O1, O2);
-    } else if (stiffnessMode == "bending_displaement") {
+    } else if (stiffnessMode == "bending_displacement") {
         studyCase = std::make_shared<CaseBendingDisplacement<dim, VectorType, MatrixType, ModelType>>(
             _problem, _model, linearSOE, O1, O2);
     }

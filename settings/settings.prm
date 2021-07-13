@@ -4,7 +4,8 @@ subsection Geometry
     set x1 = 0.0
     set x2 = 150.8407768384394
     #set stiffness = tension
-    set stiffness = torsion
+    #set stiffness = torsion
+    set stiffness = bending_displacement
 end
 subsection Physical constants
     set E = 100e-3
