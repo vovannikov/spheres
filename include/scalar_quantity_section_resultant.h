@@ -1,5 +1,5 @@
-#ifndef SCALAR_QUANTITY_TORSION_H
-#define SCALAR_QUANTITY_TORSION_H
+#ifndef SCALAR_QUANTITY_SECTION_RESULTANT_H
+#define SCALAR_QUANTITY_SECTION_RESULTANT_H
 
 #include "core/linear_soe.h"
 #include "core/problem_base.h"
@@ -8,13 +8,14 @@
 #include <deal.II/base/point.h>
 
 template <int dim, typename VectorType, typename MatrixType, typename ModelType>
-class ScalarQuantityTorsion : public CORE::ScalarQuantity<double>
+class ScalarQuantitySectionResultant : public CORE::ScalarQuantity<double>
 {
 private:
     std::shared_ptr<CORE::ProblemBase<dim, VectorType>> _problem;
     std::shared_ptr<const ModelType> _model;
     mutable std::shared_ptr<CORE::LinearSOE<VectorType, MatrixType>> _linearSOE;
     dealii::Point<dim> _center;
+    unsigned int _component_num;
 
     struct VertexData {
         dealii::Point<dim> point;
@@ -25,21 +26,21 @@ private:
 
     std::string _name;
 
-    unsigned int _component_num = 0;
-
 public:
-    ScalarQuantityTorsion(
+    ScalarQuantitySectionResultant(
         std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem,
         std::shared_ptr<const ModelType> model,
         std::shared_ptr<CORE::LinearSOE<VectorType, MatrixType>> linearSOE,
-        dealii::Point<dim> center)
+        dealii::Point<dim> center,
+        unsigned int component_num)
         : _problem(problem)
         , _model(model)
         , _linearSOE(linearSOE)
         , _center(center)
+        , _component_num(component_num)
     {
         std::stringstream sstr;
-        sstr << "tor_" <<  _component_num << "_pt_" << _center;
+        sstr << "sec_force_" <<  _component_num << "_pt_" << _center;
         _name = sstr.str();
 
         std::transform(_name.begin(), _name.end(), _name.begin(), [](char ch) {
@@ -53,8 +54,9 @@ public:
 
         computeForces();
 
+        std::vector<double> forcesAndMoments(2*dim);
+
         // Now we have to extract the necessary dofs and postprocess them
-        double T = 0;
         for (const auto& vdata : _vertices) {
 
             dealii::Tensor<1, dim> forces;
@@ -63,17 +65,30 @@ public:
 
             for (unsigned int i=0; i<dim; i++) {
                 forces[i] = _linearSOE->getRHS()[vertex.dofs[i]];
-
-                const auto& point = vertex.point;
-
-                auto radius = point - _center;
-                auto moments = dealii::cross_product_3d(radius, forces);
-
-                T += moments[_component_num];
             }
+
+            const auto& point = vertex.point;
+
+            auto radius = point - _center;
+            auto moments = dealii::cross_product_3d(radius, forces);
+
+            // Unroll tensors to vectors
+            dealii::Vector<double> vecForces(dim);
+            dealii::Vector<double> vecMoments(dim);
+            forces.unroll(vecForces);
+            moments.unroll(vecMoments);
+
+            std::vector<double> localForcesAndMoments(2*dim);
+            for (unsigned int i=0; i<dim; i++) {
+                localForcesAndMoments[i] = vecForces[i];
+                localForcesAndMoments[dim+i] = vecMoments[i];
+            }
+
+            std::transform(forcesAndMoments.begin(), forcesAndMoments.end(), 
+                localForcesAndMoments.begin(), forcesAndMoments.begin(), std::plus<double>());
         }
 
-        return T;
+        return forcesAndMoments[_component_num];
     }
 
     virtual std::string name() const
@@ -139,6 +154,9 @@ private:
 
         double posTol = 1e-6;
 
+        // Section is alogn x-axis - hardcoded so far
+        unsigned int sectionOrientation = 0;
+
         for (const auto &cell : _problem->getApproximation().getDoFHandler().active_cell_iterators())
         {
             if (cell->is_locally_owned())
@@ -147,7 +165,8 @@ private:
                 {
                     auto& point = cell->vertex(v);
 
-                    if (std::abs(point(_component_num) - _center(_component_num)) < posTol) {
+                    
+                    if (std::abs(point(sectionOrientation) - _center(sectionOrientation)) < posTol) {
                         std::vector<unsigned int> dofs;
 
                         for (unsigned int i = 0; i < dim; i++)  {
@@ -165,4 +184,4 @@ private:
 
 };
 
-#endif /* SCALAR_QUANTITY_TORSION_H */
+#endif /* SCALAR_QUANTITY_SECTION_RESULTANT_H */

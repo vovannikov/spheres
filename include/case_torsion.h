@@ -2,11 +2,11 @@
 #define CASE_TORSION_H
 
 #include "study_case.h"
+#include "scalar_quantity_section_resultant.h"
 #include "scalar_quantity_torsion.h"
 
 #include "core/linear_soe.h"
 #include "core/problem_base.h"
-#include "core/scalar_quantity_reaction.h"
 #include "core/table_entry_scalar.h"
 #include "core/table_output.h"
 
@@ -98,10 +98,13 @@ public:
     virtual void addReactions(std::shared_ptr<CORE::TableOutput> table) override
     {
         unsigned int precision = 10;
+        unsigned int componentNum = 3; // torsion Mx
 
         for (const auto& c : _constraints) {
-            auto scalarTorsionMoment = std::make_shared<ScalarQuantityTorsion<dim, VectorType, MatrixType, ModelType>>(
-                _problem, _model, _linearSOE, c.center);
+            
+            auto scalarTorsionMoment = std::make_shared<ScalarQuantitySectionResultant<dim, VectorType, MatrixType, ModelType>>(
+                _problem, _model, _linearSOE, c.center, componentNum);
+                
             table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarTorsionMoment, precision));
         }
     }
