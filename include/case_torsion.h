@@ -3,7 +3,6 @@
 
 #include "study_case.h"
 #include "scalar_quantity_section_resultant.h"
-#include "scalar_quantity_torsion.h"
 
 #include "core/linear_soe.h"
 #include "core/problem_base.h"
