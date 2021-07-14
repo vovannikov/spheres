@@ -1,5 +1,5 @@
-#ifndef CASE_BENDING_DISPLACEMENT_H
-#define CASE_BENDING_DISPLACEMENT_H
+#ifndef CASE_BENDING_ROTATION_H
+#define CASE_BENDING_ROTATION_H
 
 #include "study_case.h"
 #include "scalar_quantity_section_resultant.h"
@@ -13,10 +13,10 @@
 #include "tools/global.h"
 
 template <int dim, typename VectorType, typename MatrixType, typename ModelType>
-class CaseBendingDisplacement : public StudyCase<dim, VectorType>
+class CaseBendingRotation : public StudyCase<dim, VectorType>
 {
 private:
-    double _magnitude = 1.0;
+    double _magnitude = 0.01;
 
     std::shared_ptr<CORE::ProblemBase<dim, VectorType>> _problem;
     std::shared_ptr<const ModelType> _model;
@@ -31,7 +31,7 @@ private:
     std::vector<Constraint> _constraints;
 
 public:
-    CaseBendingDisplacement(std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem, 
+    CaseBendingRotation(std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem, 
         std::shared_ptr<const ModelType> model,
         std::shared_ptr<CORE::LinearSOE<VectorType, MatrixType>> linearSOE,
         const dealii::Point<dim>& O1, const dealii::Point<dim>& O2)
@@ -93,46 +93,16 @@ public:
         }
 
         // Impose restraints of the right section
-        const auto& vertices = _constraints[1].vertices;
-        const auto upperVertex = std::max_element(vertices.begin(), vertices.end(), [](const auto& a, const auto& b) {
-            return a.second(1) < b.second(1);
-        });
-        const auto& upperPoint = upperVertex->second;
-
-        for (const auto& vertex : vertices) {
+        for (const auto& vertex : _constraints[1].vertices) {
             const auto& point = vertex.second;
 
-            // ux = 0
-            model->addVertexConstraint(0, point, 0);
+            double y = point(1);
 
-            // uy = 1
-            model->addVertexConstraint(1, point, _magnitude);
-/*
-            double distTol = 1e-6;
-            if (point.distance(upperPoint) > distTol) {
-                model->addGeneralizedConstraint([upperPoint, point] (dealii::DoFHandler<dim>& dofHandler, dealii::AffineConstraints<double>& constraints) {
+            // ux = theta*y
+            model->addVertexConstraint(0, point, _magnitude * y);
 
-                    double yMax = upperPoint(1);
-                    double y = point(1);
-
-                    // ux proportional to radius
-                    double ratio = y / yMax;
-
-                    const unsigned int componentNum = 0;
-
-                    const int globalDofIndexUpper = CORE::findGlobalDofIndex(dofHandler, upperPoint, componentNum);
-                    const int globalDofIndex = CORE::findGlobalDofIndex(dofHandler, point, componentNum);
-
-                    if (globalDofIndex >= 0) {
-                        constraints.add_line(globalDofIndex);
-                        constraints.add_entry(globalDofIndex, globalDofIndexUpper, ratio);
-                    } else {
-                        TOOLS::cout::instance() << "WARNING: Vertex dependency constraint for point " << point 
-                            << " was not imposed since the point does not seem to be a vertex. " << std::endl;
-                    }
-                });
-            }
-*/
+            // uy = 0
+            model->addVertexConstraint(1, point, 0);
         }
     }
 
@@ -154,4 +124,4 @@ public:
     }
 };
 
-#endif // CASE_BENDING_DISPLACEMENT_H
+#endif // CASE_BENDING_ROTATION_H

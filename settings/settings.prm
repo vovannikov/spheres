@@ -6,6 +6,7 @@ subsection Geometry
     #set stiffness = tension
     #set stiffness = torsion
     set stiffness = bending_displacement
+    #set stiffness = bending_rotation
 end
 subsection Physical constants
     set E = 100e-3

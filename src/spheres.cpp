@@ -5,6 +5,7 @@
 #include "case_tension.h"
 #include "case_torsion.h"
 #include "case_bending_displacement.h"
+#include "case_bending_rotation.h"
 
 #include "core/analysis_transient.h"
 #include "core/solver_direct.h"
@@ -157,6 +158,9 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
             _problem, _model, linearSOE, O1, O2);
     } else if (stiffnessMode == "bending_displacement") {
         studyCase = std::make_shared<CaseBendingDisplacement<dim, VectorType, MatrixType, ModelType>>(
+            _problem, _model, linearSOE, O1, O2);
+    } else if (stiffnessMode == "bending_rotation") {
+        studyCase = std::make_shared<CaseBendingRotation<dim, VectorType, MatrixType, ModelType>>(
             _problem, _model, linearSOE, O1, O2);
     }
     studyCase->imposeBoundaryConditions(_model);
