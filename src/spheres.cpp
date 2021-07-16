@@ -81,8 +81,8 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
     TOOLS::cout::instance() << "x2 = " << x2 << std::endl;
 
     const std::string mesh_file = param.get("mesh");
-
     const std::string stiffnessMode = param.get("stiffness");
+    bool isRightActive = param.get_bool("right_active");
 
     TOOLS::cout::instance() << "Analysis case = " << stiffnessMode << std::endl;
 
@@ -157,16 +157,16 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
             _problem, _model, linearSOE, O1, O2);
         */
         studyCase = std::make_shared<CaseTension<dim, VectorType, MatrixType, ModelType>>(
-            _problem, _model, linearSOE, O1, O2);
+            _problem, _model, linearSOE, O1, O2, isRightActive);
     } else if (stiffnessMode == "torsion") {
         studyCase = std::make_shared<CaseTorsion<dim, VectorType, MatrixType, ModelType>>(
-            _problem, _model, linearSOE, O1, O2);
+            _problem, _model, linearSOE, O1, O2, isRightActive);
     } else if (stiffnessMode == "bending_displacement") {
         studyCase = std::make_shared<CaseBendingDisplacement<dim, VectorType, MatrixType, ModelType>>(
-            _problem, _model, linearSOE, O1, O2);
+            _problem, _model, linearSOE, O1, O2, isRightActive);
     } else if (stiffnessMode == "bending_rotation") {
         studyCase = std::make_shared<CaseBendingRotation<dim, VectorType, MatrixType, ModelType>>(
-            _problem, _model, linearSOE, O1, O2);
+            _problem, _model, linearSOE, O1, O2, isRightActive);
     }
     studyCase->imposeBoundaryConditions(_model);
 

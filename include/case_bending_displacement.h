@@ -9,19 +9,25 @@ class CaseBendingDisplacement : public CaseTwoSections<dim, VectorType, MatrixTy
 private:
     double _magnitude = 1.0;
 
+    unsigned int _activeId;
+    unsigned int _fixedId;
+
 public:
     CaseBendingDisplacement(std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem, 
         std::shared_ptr<const ModelType> model,
         std::shared_ptr<CORE::LinearSOE<VectorType, MatrixType>> linearSOE,
-        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2)
+        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2,
+        bool isRightActive)
         : CaseTwoSections<dim, VectorType, MatrixType, ModelType>(problem, model, linearSOE, O1, O2)
+        , _activeId(isRightActive ? 1 : 0)
+        , _fixedId(isRightActive ? 0 : 1)
     {
     }
 
     virtual void imposeBoundaryConditions(std::shared_ptr<CORE::Model<dim, VectorType>> model) override
     {
         // Fix left section
-        for (const auto& vertex : this->getSections()[0].vertices) {
+        for (const auto& vertex : this->getSections()[_fixedId].vertices) {
             const auto& point = vertex.second;
 
             for(unsigned int id = 0; id < dim; id++) {
@@ -41,7 +47,7 @@ public:
         const auto& upperPoint = upperVertex->second;
         */
 
-        for (const auto& vertex : this->getSections()[1].vertices) {
+        for (const auto& vertex : this->getSections()[_activeId].vertices) {
             const auto& point = vertex.second;
 
             // ux = 0

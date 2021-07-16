@@ -13,15 +13,19 @@ public:
     CaseTorsion(std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem, 
         std::shared_ptr<const ModelType> model,
         std::shared_ptr<CORE::LinearSOE<VectorType, MatrixType>> linearSOE,
-        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2)
+        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2,
+        bool isRightActive)
         : CaseTwoSections<dim, VectorType, MatrixType, ModelType>(problem, model, linearSOE, O1, O2)
     {
+        unsigned int activeId = isRightActive ? 1 : 0;
+        unsigned int fixedId = isRightActive ? 0 : 1;
+
         dealii::Point<dim> values;
 
-        _values[&this->getSections()[0]] = values;
+        _values[&this->getSections()[fixedId]] = values;
 
         values(0) = 0.01;
-        _values[&this->getSections()[1]] = values;
+        _values[&this->getSections()[activeId]] = values;
     }
 
     virtual void imposeBoundaryConditions(std::shared_ptr<CORE::Model<dim, VectorType>> model) override

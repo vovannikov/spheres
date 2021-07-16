@@ -13,6 +13,7 @@ void ParameterReader::declare_parameters()
         prm.declare_entry("x1", "0.0", dealii::Patterns::Double(0), "Sphere 1");
         prm.declare_entry("x2", "0.0", dealii::Patterns::Double(0), "Sphere 2");
         prm.declare_entry("stiffness", "tension", dealii::Patterns::Selection("tension|torsion|bending_displacement|bending_rotation"), "Which stiffness we use");
+        prm.declare_entry("right_active", "true", dealii::Patterns::Bool(), "Is right section active");
     }
     prm.leave_subsection();
     

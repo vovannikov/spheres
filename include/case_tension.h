@@ -13,11 +13,15 @@ public:
     CaseTension(std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem, 
         std::shared_ptr<const ModelType> model,
         std::shared_ptr<CORE::LinearSOE<VectorType, MatrixType>> linearSOE,
-        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2)
+        const dealii::Point<dim>& O1, const dealii::Point<dim>& O2,
+        bool isRightActive)
         : CaseTwoSections<dim, VectorType, MatrixType, ModelType>(problem, model, linearSOE, O1, O2)
     {
-        _values[&this->getSections()[0]] = std::vector<double>({0, 0, 0});
-        _values[&this->getSections()[1]] = std::vector<double>({1, 0, 0});
+        unsigned activeId = isRightActive ? 1 : 0;
+        unsigned fixedId = isRightActive ? 0 : 1;
+
+        _values[&this->getSections()[fixedId]] = std::vector<double>({0, 0, 0});
+        _values[&this->getSections()[activeId]] = std::vector<double>({1, 0, 0});
     }
 
     virtual void imposeBoundaryConditions(std::shared_ptr<CORE::Model<dim, VectorType>> model) override
