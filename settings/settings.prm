@@ -6,8 +6,8 @@ subsection Geometry
     set x2 = 150.8407768384394
     #set stiffness = tension
     #set stiffness = torsion
-    #set stiffness = bending_displacement
-    set stiffness = bending_rotation
+    set stiffness = bending_displacement
+    #set stiffness = bending_rotation
     set right_active = true
 end
 subsection Physical constants
