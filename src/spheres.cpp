@@ -2,6 +2,7 @@
 #include "spheres.h"
 
 #include "study_case.h"
+#include "case_tension_pointwise.h"
 #include "case_tension.h"
 #include "case_torsion.h"
 #include "case_bending_displacement.h"
@@ -151,6 +152,10 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
 
     std::shared_ptr<StudyCase<dim, VectorType>> studyCase;
     if (stiffnessMode == "tension") {
+        /*
+        studyCase = std::make_shared<CaseTensionPointwise<dim, VectorType, MatrixType, ModelType>>(
+            _problem, _model, linearSOE, O1, O2);
+        */
         studyCase = std::make_shared<CaseTension<dim, VectorType, MatrixType, ModelType>>(
             _problem, _model, linearSOE, O1, O2);
     } else if (stiffnessMode == "torsion") {

@@ -1,5 +1,6 @@
 subsection Geometry
     #set mesh = /home/kapusta/work/ai-2particles/spheres2-v2.msh
+    #set mesh = /home/kapusta/work/ai-2particles/spheres3-v2-1region.msh
     set mesh = /home/kapusta/work/ai-2particles/spheres3-v3-4regions.msh
     set x1 = 0.0
     set x2 = 150.8407768384394
