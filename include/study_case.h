@@ -12,6 +12,7 @@ class StudyCase
 public:
     virtual void imposeBoundaryConditions(std::shared_ptr<CORE::Model<dim, VectorType>> model) = 0;
     virtual void addReactions(std::shared_ptr<CORE::TableOutput> table) = 0;
+    virtual double loadMagnitude() const = 0;
 };
 
 #endif // STUDY_CASE_H

@@ -66,6 +66,11 @@ public:
             table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarReaction, precision));
         }
     }
+
+    virtual double loadMagnitude() const override
+    {
+        return _magnitude;
+    }
 };
 
 #endif // CASE_TENSION_POINTWISE_H

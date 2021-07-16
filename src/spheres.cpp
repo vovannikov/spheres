@@ -22,6 +22,7 @@
 #include "core/analysis_one_step.h"
 
 #include "core/scalar_quantity_time.h"
+#include "core/scalar_quantity_const.h"
 #include "core/table_output.h"
 #include "core/table_entry_scalar.h"
 
@@ -206,6 +207,9 @@ Spheres<dim>::Spheres(dealii::ParameterHandler &param)
 
         auto scalarTime = std::make_shared<CORE::ScalarQuantityTime>(_model);
         table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarTime));
+
+        auto scalarLoadMagnitude = std::make_shared<CORE::ScalarQuantityConst>("load_magnitude", studyCase->loadMagnitude());
+        table->addEntry(std::make_shared<CORE::TableEntryScalar<double>>(scalarLoadMagnitude));
 
         studyCase->addReactions(table);
     }

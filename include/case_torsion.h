@@ -9,6 +9,8 @@ class CaseTorsion : public CaseTwoSections<dim, VectorType, MatrixType, ModelTyp
 private:
     std::map<const Section<dim>*, dealii::Point<dim>> _values;
 
+    double _magnitude = 0.01;
+
 public:
     CaseTorsion(std::shared_ptr<CORE::ProblemBase<dim, VectorType>> problem, 
         std::shared_ptr<const ModelType> model,
@@ -24,7 +26,7 @@ public:
 
         _values[&this->getSections()[fixedId]] = values;
 
-        values(0) = 0.01;
+        values(0) = _magnitude;
         _values[&this->getSections()[activeId]] = values;
     }
 
@@ -55,6 +57,11 @@ public:
         for (const auto& c : this->getSections()) {
             table->addEntry(this->createTableEntry(c.center, componentMx));
         }
+    }
+
+    virtual double loadMagnitude() const override
+    {
+        return _magnitude;
     }
 };
 

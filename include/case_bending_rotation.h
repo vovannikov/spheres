@@ -59,6 +59,11 @@ public:
             table->addEntry(this->createTableEntry(c.center, componentMz));
         }
     }
+
+    virtual double loadMagnitude() const override
+    {
+        return _magnitude;
+    }
 };
 
 #endif // CASE_BENDING_ROTATION_H
