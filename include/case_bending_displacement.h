@@ -7,7 +7,7 @@ template <int dim, typename VectorType, typename MatrixType, typename ModelType>
 class CaseBendingDisplacement : public CaseTwoSections<dim, VectorType, MatrixType, ModelType>
 {
 private:
-    double _magnitude = 1.0;
+    double _magnitude;
 
     unsigned int _activeId;
     unsigned int _fixedId;
@@ -19,6 +19,7 @@ public:
         const dealii::Point<dim>& O1, const dealii::Point<dim>& O2,
         bool isRightActive)
         : CaseTwoSections<dim, VectorType, MatrixType, ModelType>(problem, model, linearSOE, O1, O2)
+        , _magnitude(isRightActive ? -1.0 : 1.0)
         , _activeId(isRightActive ? 1 : 0)
         , _fixedId(isRightActive ? 0 : 1)
     {
