@@ -125,8 +125,8 @@ def runAllCases(options):
 
     # List of params to vary
     if doCompleteRun:
-        lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200, 250] # mkm, total = 11
-        lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5] # mkm, total = 9
+        lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200, 250, 300] # mkm, total = 12
+        lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6] # mkm, total = 10
         lstE = [5, 10, 25, 50, 100, 150, 200] # mkm, total = 7
     else:
         # Debug reduced list
