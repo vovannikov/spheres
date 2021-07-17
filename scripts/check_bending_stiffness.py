@@ -19,5 +19,8 @@ K = np.matrix([
     [csv['Kb31'][n], csv['Kb32'][n], csv['Kb33'][n], csv['Kb34'][n]],
     [csv['Kb41'][n], csv['Kb42'][n], csv['Kb43'][n], csv['Kb44'][n]]])
 
-print("Bending stiffness for entry #{}".format(n))
+print("Bending stiffness for entry #{}:".format(n))
 print(K)
+
+print("Symmetry check:")
+print(K-np.transpose(K))

@@ -96,4 +96,8 @@ for col in resData:
 
 # Resultant file name where everything is merged together
 pathCsvResultant = os.path.join(pathJobs, resultantFileName)
+
+if os.path.exists(pathCsvResultant):
+    os.remove(pathCsvResultant)
+
 np.savetxt(pathCsvResultant, np.transpose(csv), header=','.join(header), comments='', delimiter=',')

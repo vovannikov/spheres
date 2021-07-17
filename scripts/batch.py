@@ -74,7 +74,7 @@ def runCase(comb, options, pathMsh, pathLog, pathPrm):
     caseParams = caseParams.replace("%x2%", str(offset))
     caseParams = caseParams.replace("%E%", str(E))
     caseParams = caseParams.replace("%log%", fileLog)
-    caseParams = caseParams.replace("%right%", str(options['right']))
+    caseParams = caseParams.replace("%right%", str(options['right']).lower())
 
     with open(fileSet, "w") as fileCaseSettings:
         fileCaseSettings.write(caseParams)
