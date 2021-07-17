@@ -9,20 +9,14 @@ import time
 import argparse
 from pathlib import Path
 
+# import settings
+from settings import *
+
 # mesh template
 meshTpl = "universal"
 
 # Do real simulations of just debug
 doRealSimulations = True
-
-# paths TO DEFINE
-pathSpheresSrc = "~/development/spheres"
-pathExec = "~/development/spheres-release/src/spheres_runner"
-pathBatch = "~/work/spheres"
-
-# Dependent paths
-pathParams = os.path.join(pathSpheresSrc, "settings/settings-tpl.prm")
-pathJobs = os.path.join(pathBatch, "jobs")
 
 def runCaseWrapper(data):
     comb = data['comb']
@@ -62,6 +56,7 @@ def runCase(comb, options, pathMsh, pathLog, pathPrm):
         return
 
     # Generate mesh with gmsh
+    pathGeo = os.path.join(pathSpheresSrc, "settings/spheres{}-{}-tpl.geo".format(geoSym, meshTpl))
     if doRealSimulations and (not(os.path.isfile(fileMsh)) or options['mesh']):
         cmdGmsh = "gmsh -{} {} -setnumber R1 {} -setnumber R2 {} -setnumber Rn {} -setnumber h1 {} -setnumber h2 {} -o {}".format(geoSym, pathGeo, R1, R2, Rn, strH1, strH2, fileMsh)
         stream = os.popen(cmdGmsh)
@@ -107,7 +102,7 @@ def runAllCases(options):
     #stiffnessMode = "bending_rotation"
     stiffnessMode = options['stiffness']
 
-    pathGeo = os.path.join(pathSpheresSrc, "settings/spheres{}-{}-tpl.geo".format(geoSym, meshTpl))
+    # General folders
     pathCase = os.path.join(pathJobs, "{}/{}d/{}".format(stiffnessMode, geoSym, secSym))
 
     if not(meshTpl == stiffnessMode):
@@ -244,7 +239,7 @@ def runAllCases(options):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Simulation parameters')
     parser.add_argument("-g", "--geometry", help="Geometry type", choices=['2d', '3d'], required=True)
     parser.add_argument("-s", "--stiffness", help="Case to analyze", required=True,
         choices=['tension', 'torsion', 'bending_displacement', 'bending_rotation'])

@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from batch import runAllCases
-from batch import pathJobs
+from settings import *
 
 lstJobs = [
     {'stiffness': 'tension', 'right': True},
@@ -94,5 +94,6 @@ for col in resData:
     header.append(col['header'])
     csv.append(col['data'])
 
-pathCsvResultant = os.path.join(pathJobs, 'stiffness_3d.csv')
+# Resultant file name where everything is merged together
+pathCsvResultant = os.path.join(pathJobs, resultantFileName)
 np.savetxt(pathCsvResultant, np.transpose(csv), header=','.join(header), comments='', delimiter=',')
