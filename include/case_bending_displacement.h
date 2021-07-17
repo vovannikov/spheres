@@ -19,7 +19,8 @@ public:
         const dealii::Point<dim>& O1, const dealii::Point<dim>& O2,
         bool isRightActive)
         : CaseTwoSections<dim, VectorType, MatrixType, ModelType>(problem, model, linearSOE, O1, O2)
-        , _magnitude(isRightActive ? -1.0 : 1.0)
+        //, _magnitude(isRightActive ? -1.0 : 1.0)
+        , _magnitude(-1.0)
         , _activeId(isRightActive ? 1 : 0)
         , _fixedId(isRightActive ? 0 : 1)
     {
