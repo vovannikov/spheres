@@ -8,6 +8,9 @@ pathBatch = os.path.join(pathHome, "work/spheres")
 
 resultantFileName = 'stiffness_3d.csv'
 
+# run all cases or reduced set for tests
+doCompleteRun = True
+
 # Dependent paths, do not touch this
 pathParams = os.path.join(pathSpheresSrc, "settings/settings-tpl.prm")
 pathJobs = os.path.join(pathBatch, "jobs")

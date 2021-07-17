@@ -124,14 +124,15 @@ def runAllCases(options):
     time_start = time.time()
 
     # List of params to vary
-    lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200] # mkm, total = 10
-    lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5] # mkm, total = 9
-    lstE = [5, 10, 20, 40, 70, 100, 130, 160, 200] # mkm, total = 9
-
-    # Debug reduced list
-    lstD = [38, 45]
-    lstRnRatio = [0.01, 0.02]
-    lstE = [5, 10]
+    if doCompleteRun:
+        lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200, 250] # mkm, total = 11
+        lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5] # mkm, total = 9
+        lstE = [5, 10, 25, 50, 100, 150, 200] # mkm, total = 7
+    else:
+        # Debug reduced list
+        lstD = [38, 45]
+        lstRnRatio = [0.01, 0.02]
+        lstE = [5, 10]
 
     nDiam = int(len(lstD) * (len(lstD) + 1) / 2)
     nRatio = len(lstRnRatio)
