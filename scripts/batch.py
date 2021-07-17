@@ -142,7 +142,7 @@ def runAllCases(options):
 
     print("# of diameters combinations = {}".format(nDiam))
     print("# of neck ratios = {}".format(nRatio))
-    print("# of Young's modulii = {}".format(nE))
+    print("# of Young's moduli = {}".format(nE))
     print("# of combinations = {}".format(nTotal))
 
     lstCombinations = []
