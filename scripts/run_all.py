@@ -1,7 +1,12 @@
 import os
+import shutil
 import numpy as np
 from batch import runAllCases
 from settings import *
+
+if doCleanup:
+    shutil.rmtree(pathJobs)
+    shutil.rmtree(pathMesh)
 
 lstJobs = [
     {'stiffness': 'tension', 'right': True},
@@ -11,10 +16,6 @@ lstJobs = [
     {'stiffness': 'bending_displacement', 'right': True},
     {'stiffness': 'bending_rotation', 'right': True}
 ]
-
-geometry = '3d'
-doForceMesh = False
-doForceCalc = False
 
 for job in lstJobs:
 
@@ -36,8 +37,9 @@ lstCsv = []
 for root, dirs, files in os.walk(pathJobs):
     for file in files:
         if file.endswith(".csv"):
-            filePath = os.path.join(root, file)
-            lstCsv.append(filePath)
+            if not(os.path.exists(os.path.join(pathJobs, file))):
+                filePath = os.path.join(root, file)
+                lstCsv.append(filePath)
 
 resPre = []
 resData = []
@@ -100,4 +102,10 @@ pathCsvResultant = os.path.join(pathJobs, resultantFileName)
 if os.path.exists(pathCsvResultant):
     os.remove(pathCsvResultant)
 
-np.savetxt(pathCsvResultant, np.transpose(csv), header=','.join(header), comments='', delimiter=',')
+if len(csv[0].shape) == 0:
+    csv = np.array([c.item() for c in csv])
+    csv = csv.reshape(1, csv.shape[0])
+else:
+    csv = np.transpose(csv)
+
+np.savetxt(pathCsvResultant, csv, header=','.join(header), comments='', delimiter=',')

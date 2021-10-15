@@ -22,12 +22,13 @@ def runCaseWrapper(data):
     comb = data['comb']
     options = data['options']
     pathMsh = data['pathMsh']
+    pathVtk = data['pathVtk']
     pathLog = data['pathLog']
     pathPrm = data['pathPrm']
 
-    runCase(comb, options, pathMsh, pathLog, pathPrm)
+    runCase(comb, options, pathMsh, pathVtk, pathLog, pathPrm)
 
-def runCase(comb, options, pathMsh, pathLog, pathPrm):
+def runCase(comb, options, pathMsh, pathVtk, pathLog, pathPrm):
 
     geoSym = "3" if options['geometry'] == "3d" else "2"
 
@@ -48,6 +49,7 @@ def runCase(comb, options, pathMsh, pathLog, pathPrm):
 
     caseFileName = "spheres{}_R1={:.1f}_R2={:.1f}_Rn={:.4f}_E={:.0f}".format(geoSym, R1, R2, Rn, comb['E'])
     fileMsh = "{}/{}.msh".format(pathMsh, caseFileName)
+    fileVtk = "{}/{}".format(pathVtk, caseFileName)
     fileLog = "{}/{}.log".format(pathLog, caseFileName)
     fileSet = "{}/{}.prm".format(pathPrm, caseFileName)
 
@@ -58,7 +60,7 @@ def runCase(comb, options, pathMsh, pathLog, pathPrm):
     # Generate mesh with gmsh
     pathGeo = os.path.join(pathSpheresSrc, "settings/spheres{}-{}-tpl.geo".format(geoSym, meshTpl))
     if doRealSimulations and (not(os.path.isfile(fileMsh)) or options['mesh']):
-        cmdGmsh = "gmsh -{} {} -setnumber R1 {} -setnumber R2 {} -setnumber Rn {} -setnumber h1 {} -setnumber h2 {} -o {}".format(geoSym, pathGeo, R1, R2, Rn, strH1, strH2, fileMsh)
+        cmdGmsh = "gmsh -{} {} -setnumber lc {} -setnumber R1 {} -setnumber R2 {} -setnumber Rn {} -setnumber h1 {} -setnumber h2 {} -o {}".format(geoSym, pathGeo, meshLc, R1, R2, Rn, strH1, strH2, fileMsh)
         stream = os.popen(cmdGmsh)
         output = stream.read()
         #os.system(cmdGmsh)
@@ -74,6 +76,8 @@ def runCase(comb, options, pathMsh, pathLog, pathPrm):
     caseParams = caseParams.replace("%x2%", str(offset))
     caseParams = caseParams.replace("%E%", str(E))
     caseParams = caseParams.replace("%log%", fileLog)
+    caseParams = caseParams.replace("%vtk%", fileVtk)
+    caseParams = caseParams.replace("%save_vtk%", 'true' if doSaveVtk else 'false')
     caseParams = caseParams.replace("%right%", str(options['right']).lower())
 
     with open(fileSet, "w") as fileCaseSettings:
@@ -110,29 +114,18 @@ def runAllCases(options):
     else:
         pathMsh = os.path.join(pathCase, "mesh")
 
+    pathVtk = os.path.join(pathCase, "vtk")
     pathLog = os.path.join(pathCase, "log")
     pathPrm = os.path.join(pathCase, "prm")
 
     # Check and create directories
     Path(pathCase).mkdir(parents=True, exist_ok=True)
     Path(pathMsh).mkdir(parents=True, exist_ok=True)
+    Path(pathVtk).mkdir(parents=True, exist_ok=True)
     Path(pathLog).mkdir(parents=True, exist_ok=True)
     Path(pathPrm).mkdir(parents=True, exist_ok=True)
 
-    nproc = 6
-
     time_start = time.time()
-
-    # List of params to vary
-    if doCompleteRun:
-        lstD = [38, 45, 63, 75, 90, 106, 125, 150, 175, 200, 250, 300] # mkm, total = 12
-        lstRnRatio = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6] # mkm, total = 10
-        lstE = [5, 10, 25, 50, 100, 150, 200] # mkm, total = 7
-    else:
-        # Debug reduced list
-        lstD = [38, 45]
-        lstRnRatio = [0.01, 0.02]
-        lstE = [5, 10]
 
     nDiam = int(len(lstD) * (len(lstD) + 1) / 2)
     nRatio = len(lstRnRatio)
@@ -156,6 +149,7 @@ def runAllCases(options):
                             'comb': {'dA': dA, 'dB': dB, 'rNrat': rNratio, 'E': E},
                             'options': options,
                             'pathMsh': pathMsh, 
+                            'pathVtk': pathVtk, 
                             'pathLog': pathLog, 
                             'pathPrm': pathPrm
                         })

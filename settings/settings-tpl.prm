@@ -11,8 +11,8 @@ subsection Physical constants
     set tensor = true
 end
 subsection Output
-    set save_vtk = false
+    set save_vtk = %save_vtk%
     set save_log = true
-    set path_vtk = /mnt/c/Temp/ai-2particles
+    set path_vtk = %vtk%
     set path_log = %log%
 end

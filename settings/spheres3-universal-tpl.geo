@@ -8,8 +8,9 @@ Mesh.Algorithm3D = 10;
 //Rn = 0.2*R2;
 //h1 = Sqrt(R1*R1 - Rn*Rn);
 //h2 = Sqrt(R2*R2 - Rn*Rn);
+//ratio_lc = 0.15; // 2.0 - super coarse for debug //0.1 - coarse computations, 0.02 - fine computations
 
-ratio_lc = 0.15; // 2.0 - super coarse for debug //0.1 - coarse computations, 0.02 - fine computations
+ratio_lc = lc;
 lc1 = ratio_lc * R1;
 lc2 = ratio_lc * R2;
 
