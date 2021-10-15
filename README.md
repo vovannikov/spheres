@@ -29,3 +29,8 @@ make
 ```
 ./src/spheres_runner ../spheres/settings/settings.prm [2d or 3d]
 ```
+
+6. Edit settings in settings.py and run the entire batch then
+```
+python3 ./scripts/run_all 
+```
